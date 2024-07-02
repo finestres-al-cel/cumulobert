@@ -1,0 +1,7 @@
+Imatge original:
+
+Web per fer la reducció astrometrica: https://nova.astrometry.net/upload
+S'ha de pujar la imatge original, i esperar a que acabi de processar les dades.
+Anem a "go to results page", i descarreguem la imatge calibrada astrometricament: New FITS image
+
+La imatge reduida es diu new-image.fits

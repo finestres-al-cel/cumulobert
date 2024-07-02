@@ -1,0 +1,8 @@
+
+Field center
+ra = 276.771 deg
+dec = 6.399 deg
+
+Field size 
+21.4 arcmin
+

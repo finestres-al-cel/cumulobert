@@ -1,0 +1,4 @@
+0. Select the reference magnitudes and compute the measured magnitudes
+1. Fix the pixels to RA/Dec transformation in cluster_image.py
+2. Add the postprocessing to build the HR diagram
+3. Integrate the astrometric reduction of the files
