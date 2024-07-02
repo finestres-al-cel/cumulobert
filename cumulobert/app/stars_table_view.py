@@ -10,6 +10,10 @@ import pyqtgraph as pg
 
 from cumulobert.app.success_dialog import SuccessDialog
 
+SHOW_COLUMNS = [
+    "xcentroid", "ycentroid", "ra", "dec", "filter",
+    "inst. mag", "TIC", "GAIA", "Bmag", "Vmag", "is reference", "calib mag"]
+MIN_REF_STARS = 3
 
 class StarsTableView(QWidget):
     """ Manage table plotting
@@ -67,6 +71,12 @@ class StarsTableView(QWidget):
     def find_mags(self):
         """Fit the instrumental magnitudes using the refernce magnitudes"""
         pos = np.where(~np.isnan(self.data["ref mag"]))
+        if len(pos[0]) < MIN_REF_STARS:
+            errorDialog = ErrorDialog(
+                f"Error: I need at least {MIN_REF_STARS} reference stars")
+            errorDialog.exec()
+            return
+
         ref_mags = self.data["ref mag"][pos]
         inst_mags = self.data["inst. mag"][pos]
 
@@ -77,7 +87,7 @@ class StarsTableView(QWidget):
         # m = A + B m_inst
         mag_fit = np.poly1d(np.polyfit(inst_mags, ref_mags, 1))
 
-        self.data["mag"] = mag_fit(self.data["inst. mag"])
+        self.data["calib mag"] = mag_fit(self.data["inst. mag"])
 
         successDialog = SuccessDialog("Magnitudes computed!")
         successDialog.exec()
@@ -96,16 +106,16 @@ class StarsTableView(QWidget):
         n_rows = len(self.data)
         n_cols = len(self.data.colnames)
 
-
         self.table_widget.setRowCount(n_rows)
         self.table_widget.setColumnCount(n_cols)
         self.table_widget.setHorizontalHeaderLabels(self.data.colnames)
 
         # Fill the table with data from the astropy table
         for row in range(len(self.data)):
-            for col, colname in enumerate(self.data.colnames):
-                item = QTableWidgetItem(str(self.data[colname][row]))
-                self.table_widget.setItem(row, col, item)
+            for col in SHOW_COLUMNS:
+                if col in self.data.colnames:
+                    item = QTableWidgetItem(str(self.data[colname][row]))
+                    self.table_widget.setItem(row, col, item)
 
          # Connect cell change signal to update Astropy table
         self.table_widget.itemChanged.connect(self.update_table)
