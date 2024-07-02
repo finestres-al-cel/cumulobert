@@ -114,7 +114,7 @@ class StarsTableView(QWidget):
         for row in range(len(self.data)):
             for col in SHOW_COLUMNS:
                 if col in self.data.colnames:
-                    item = QTableWidgetItem(str(self.data[colname][row]))
+                    item = QTableWidgetItem(str(self.data[col][row]))
                     self.table_widget.setItem(row, col, item)
 
          # Connect cell change signal to update Astropy table
