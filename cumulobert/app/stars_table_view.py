@@ -70,14 +70,28 @@ class StarsTableView(QWidget):
 
     def find_mags(self):
         """Fit the instrumental magnitudes using the refernce magnitudes"""
-        pos = np.where(~np.isnan(self.data["ref mag"]))
+        pos = np.where(self.data["is reference"])
         if len(pos[0]) < MIN_REF_STARS:
             errorDialog = ErrorDialog(
                 f"Error: I need at least {MIN_REF_STARS} reference stars")
             errorDialog.exec()
             return
+        if np.unique(self.data["filter"]).size > 1:
+            errorDialog = ErrorDialog(
+                "Error: I see there are many filters in this table."
+                "I expected only one to be present")
+            errorDialog.exec()
+            return
 
-        ref_mags = self.data["ref mag"][pos]
+        mag_colname = self.data["filter"][0].split(" ")[1]
+        mag_colname = f"{mag_colname}mag"
+        if mag_colname not in self.data.colnames:
+            errorDialog = ErrorDialog(
+                "Error: I could not find the magnitude for this filter")
+            errorDialog.exec()
+            return
+
+        ref_mags = self.data[mag_colname][pos]
         inst_mags = self.data["inst. mag"][pos]
 
         # The full formula should be something like this
@@ -103,19 +117,21 @@ class StarsTableView(QWidget):
         We fill this widget with the table data and connect it with the
         update_table function when changes are made
         """
-        n_rows = len(self.data)
-        n_cols = len(self.data.colnames)
+        # select columns to show
+        self.show_columns = [col for col in SHOW_COLUMNS if col in self.data.colnames]
 
+        n_rows = len(self.data)
+        n_cols = len(self.show_columns)
         self.table_widget.setRowCount(n_rows)
         self.table_widget.setColumnCount(n_cols)
-        self.table_widget.setHorizontalHeaderLabels(self.data.colnames)
+        self.table_widget.setHorizontalHeaderLabels(self.show_columns)
+
 
         # Fill the table with data from the astropy table
         for row in range(len(self.data)):
-            for col in SHOW_COLUMNS:
-                if col in self.data.colnames:
-                    item = QTableWidgetItem(str(self.data[col][row]))
-                    self.table_widget.setItem(row, col, item)
+            for col, colname in enumerate(self.show_columns):
+                item = QTableWidgetItem(str(self.data[colname][row]))
+                self.table_widget.setItem(row, col, item)
 
          # Connect cell change signal to update Astropy table
         self.table_widget.itemChanged.connect(self.update_table)
@@ -133,5 +149,5 @@ class StarsTableView(QWidget):
         """Update table"""
         row = item.row()
         col = item.column()
-        colname = self.data.colnames[col]
+        colname = self.show_columns[col]
         self.data[colname][row] = item.text()

@@ -238,7 +238,7 @@ class ClusterImage:
         self.star_cat = cross_frame_cat[mask]
 
         # add flag to set reference stars
-        self.star_cat["is refernce"] = False
+        self.star_cat["is reference"] = False
 
     def annular_radius_arrays(self, pix_to_radec=False):
         """ Find the points building the annular radius used for the background
