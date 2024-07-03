@@ -32,12 +32,6 @@ from cumulobert.cluster_image import ClusterImage
 from cumulobert.errors import ClusterImageError
 from cumulobert.external_catalogue import ExternalCatalogue
 
-"""
-from cumulobert.calibration import Calibration
-
-from cumulobert.spectrum import Spectrum
-"""
-
 class MainWindow(QMainWindow):
     """Main Window
 
@@ -141,6 +135,16 @@ class MainWindow(QMainWindow):
                 "An error occurred when extracting stellar information:\n" + str(error))
             errorDialog.exec()
             return
+
+        # sort table
+        star_cat = self.cluster_image.star_cat
+        # sort by RA/Dec
+        if self.imageView.pix_to_radec:
+            star_cat.sort(['ra', 'dec'])
+        # sort by x/y
+        else:
+            star_cat.sort(['xcentroid', 'ycentroid'])
+
 
         windowWidth = self.frameGeometry().width()
         windowHeight = self.frameGeometry().height()
