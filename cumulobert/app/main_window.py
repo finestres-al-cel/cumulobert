@@ -242,9 +242,16 @@ class MainWindow(QMainWindow):
                 self.imageView = ImageView(self.cluster_image)
                 self.setCentralWidget(self.imageView)
 
-                # enable extract spectrum options
+                # enable stellar extraction options
                 for action in self.reduceActions:
                     action.setEnabled(True)
+
+                # Add a status bar to show mouse position
+                self.status_bar = QStatusBar()
+                self.setStatusBar(self.status_bar)
+
+                # Connect mouse move event to a custom slot
+                self.imageView.scene().sigMouseMoved.connect(self.on_mouse_move)
 
             except ClusterImageError as error:
                 errorDialog = ErrorDialog(
@@ -257,6 +264,16 @@ class MainWindow(QMainWindow):
             errorDialog = ErrorDialog(
                 "An error occurred when opening an Table:\n" + str(error))
             errorDialog.exec()
+
+    def on_mouse_move(self, pos):
+        # Get the mouse position in the view coordinates
+        mouse_point = self.imageView.plotItem.vb.mapSceneToView(pos)
+        x = mouse_point.x()
+        y = mouse_point.y()
+
+        # Update the status bar with the mouse position
+        # TODO: fix this if RA/Dec is show instead of X/Y
+        self.status_bar.showMessage(f"X: {x:.2f}, Y: {y:.2f}")
 
     @pyqtSlot()
     def queryCatalogue(self):
