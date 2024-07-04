@@ -78,6 +78,21 @@ class ImageView(pg.PlotWidget):
         """
         self.invertYFlag = status
 
+    def resetPlot(self):
+        """Reset plot"""
+        # reset labels
+        self.setLabel(axis='left', text='')
+        self.setLabel(axis='bottom', text='')
+        # Remove existing items if they exists
+        if self.colorBar is not None:
+            self.getPlotItem().layout.removeItem(self.colorBar)
+            self.colorBar = None
+        if self.imageItem is not None:
+            self.getPlotItem().removeItem(self.imageItem)
+            self.imageItem = None
+        # reset plot
+        self.clear()
+
     def setPlot(self):
         """Load plot settings"""
 
@@ -115,19 +130,8 @@ class ImageView(pg.PlotWidget):
         if self.colorBar is not None:
             self.colorBarValues = self.colorBar.values
 
-        # reset labels
-        self.setLabel(axis='left', text='')
-        self.setLabel(axis='bottom', text='')
-        # Remove existing items if they exists
-        if self.colorBar is not None:
-            self.getPlotItem().layout.removeItem(self.colorBar)
-            self.colorBar = None
-        if self.imageItem is not None:
-            self.getPlotItem().removeItem(self.imageItem)
-            self.imageItem = None
         # reset plot
-        self.clear()
-
+        self.resetPlot()
 
         # plot image
         self.imageItem = pg.ImageItem(self.imageData.transpose())
