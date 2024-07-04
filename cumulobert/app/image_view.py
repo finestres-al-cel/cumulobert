@@ -48,6 +48,8 @@ class ImageView(pg.PlotWidget):
 
         # plot image
         self.imageItem = None
+        self.colorBar = None
+        self.colorBarValues = None
         self.updatePlot()
 
     def setPlot(self):
@@ -78,6 +80,9 @@ class ImageView(pg.PlotWidget):
 
     def updatePlot(self):
         """Update plot"""
+        if self.colorBar is not None:
+            self.colorBarValues = self.colorBar.values
+
         # reset plot
         self.clear()
 
@@ -98,15 +103,24 @@ class ImageView(pg.PlotWidget):
 
         colorMap = pg.colormap.get("CET-L2")  # choose perceptually uniform, diverging color map
         # generate an adjustabled color bar, initially spanning -1 to 1:
-        bar = pg.ColorBarItem(
-            # we multiply the minimum and maximum levels by 1.08 and 0.017
-            # these are arbitrary values that can be changed in the display
-            # but have been found to have a good balance in some images
-            values=(np.min(self.imageData)*1.055, np.max(self.imageData)*0.017),
-            #values=(1009,1029),
-            colorMap=colorMap)
+        if self.colorBarValues is None:
+            self.colorBar = pg.ColorBarItem(
+                # we multiply the minimum and maximum levels by 1.08 and 0.017
+                # these are arbitrary values that can be changed in the display
+                # but have been found to have a good balance in some images
+                values=(np.min(self.imageData)*1.055, np.max(self.imageData)*0.017),
+                #values=(1009,1029),
+                colorMap=colorMap)
+        else:
+            self.colorBar = pg.ColorBarItem(
+                # we multiply the minimum and maximum levels by 1.08 and 0.017
+                # these are arbitrary values that can be changed in the display
+                # but have been found to have a good balance in some images
+                values=self.colorBarValues,
+                #values=(1009,1029),
+                colorMap=colorMap)
         # link color bar and color map to correlogram, and show it in plotItem:
-        bar.setImageItem(self.imageItem, insert_in=self.getPlotItem())
+        self.colorBar.setImageItem(self.imageItem, insert_in=self.getPlotItem())
 
         # plot aperture radius
         if self.aperRadiusList is not None:
