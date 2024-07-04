@@ -24,6 +24,7 @@ from cumulobert.app.load_actions import (
     loadFileMenuActions,
     reduceActions,
 )
+from cumulobert.app.invert_axis_dialog import InvertAxisDialog
 from cumulobert.app.query_catalogue_dialog import QueryCatalogueDialog
 from cumulobert.app.success_dialog import SuccessDialog
 from cumulobert.app.stars_table_view import StarsTableView
@@ -213,6 +214,28 @@ class MainWindow(QMainWindow):
                 "An error occurred when finding stars:\n" + str(error))
             errorDialog.exec()
             return
+
+    @pyqtSlot()
+    def invertAxis(self):
+        """Open dialog to invert plot axis"""
+        invertAxisDialog = InvertAxisDialog()
+
+        if invertAxisDialog.exec():
+            try:
+                whichAxis = invertAxisDialog.whichAxisQuestion.text().lower()
+                assert whichAxis in ["x", "y", "both"]
+            except AssertionError:
+                errorDialog = ErrorDialog(
+                    "Chosen invalid axis. Please choose 'x', 'y' or 'both' ")
+                errorDialog.exec()
+                return
+
+            if whichAxis in ["x", "both"]:
+                self.imageView.setInvertXFlag(~self.imageView.invertXFlag)
+            if whichAxis in ["y", "both"]:
+                self.imageView.setInvertYFlag(~self.imageView.invertYFlag)
+            self.imageView.updatePlot()
+
 
     @pyqtSlot()
     def openFile(self):

@@ -71,4 +71,15 @@ def reduceActions(window):
     extract_stars_option.setEnabled(False)
     menuActions.append(extract_stars_option)
 
+    invert_axis_option = QAction(
+        QIcon(f"{BUTTONS_PATH}/invert_axis.png"),
+        "&Invert Axis",
+        window)
+    invert_axis_option.setStatusTip("Invert Axis")
+    invert_axis_option.triggered.connect(window.invertAxis)
+    invert_axis_option.setEnabled(False)
+    menuActions.append(invert_axis_option)
+
+
+
     return menuActions

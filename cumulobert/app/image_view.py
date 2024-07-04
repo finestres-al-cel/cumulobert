@@ -50,7 +50,33 @@ class ImageView(pg.PlotWidget):
         self.imageItem = None
         self.colorBar = None
         self.colorBarValues = None
+        if self.pix_to_radec:
+            self.invertXFlag = True
+            self.invertYFlag = True
+        else:
+            self.invertXFlag = False
+            self.invertYFlag = False
         self.updatePlot()
+
+    def setInvertXFlag(self, status):
+        """Set the invert flag for X axis
+
+        Arguments
+        ---------
+        status: bool
+        Set the invertXFlag status.
+        """
+        self.invertXFlag = status
+
+    def setInvertYFlag(self, status):
+        """Set the invert flag for Y axis
+
+        Arguments
+        ---------
+        status: bool
+        Set the invertYFlag status.
+        """
+        self.invertYFlag = status
 
     def setPlot(self):
         """Load plot settings"""
@@ -74,9 +100,14 @@ class ImageView(pg.PlotWidget):
         bottomAxis.setTickFont(font)
 
         # invert axis
-        if self.pix_to_radec:
+        if self.invertXFlag:
             self.invertX(True)
+        else:
+            self.invertX(False)
+        if self.invertYFlag:
             self.invertY(True)
+        else:
+            self.invertY(False)
 
     def updatePlot(self):
         """Update plot"""
@@ -109,15 +140,11 @@ class ImageView(pg.PlotWidget):
                 # these are arbitrary values that can be changed in the display
                 # but have been found to have a good balance in some images
                 values=(np.min(self.imageData)*1.055, np.max(self.imageData)*0.017),
-                #values=(1009,1029),
                 colorMap=colorMap)
         else:
             self.colorBar = pg.ColorBarItem(
-                # we multiply the minimum and maximum levels by 1.08 and 0.017
-                # these are arbitrary values that can be changed in the display
-                # but have been found to have a good balance in some images
+                # we use previous limits
                 values=self.colorBarValues,
-                #values=(1009,1029),
                 colorMap=colorMap)
         # link color bar and color map to correlogram, and show it in plotItem:
         self.colorBar.setImageItem(self.imageItem, insert_in=self.getPlotItem())
