@@ -111,11 +111,23 @@ class ImageView(pg.PlotWidget):
 
     def updatePlot(self):
         """Update plot"""
+        # keep colorbar values before reset
         if self.colorBar is not None:
             self.colorBarValues = self.colorBar.values
 
+        # reset labels
+        self.setLabel(axis='left', text='')
+        self.setLabel(axis='bottom', text='')
+        # Remove existing items if they exists
+        if self.colorBar is not None:
+            self.getPlotItem().layout.removeItem(self.colorBar)
+            self.colorBar = None
+        if self.imageItem is not None:
+            self.getPlotItem().removeItem(self.imageItem)
+            self.imageItem = None
         # reset plot
         self.clear()
+
 
         # plot image
         self.imageItem = pg.ImageItem(self.imageData.transpose())
@@ -133,7 +145,8 @@ class ImageView(pg.PlotWidget):
             self.imageItem.setRect(rect)
 
         colorMap = pg.colormap.get("CET-L2")  # choose perceptually uniform, diverging color map
-        # generate an adjustabled color bar, initially spanning -1 to 1:
+
+        # generate an adjustabled color bar
         if self.colorBarValues is None:
             self.colorBar = pg.ColorBarItem(
                 # we multiply the minimum and maximum levels by 1.08 and 0.017
