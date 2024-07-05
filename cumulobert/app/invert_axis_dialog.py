@@ -32,7 +32,7 @@ class InvertAxisDialog(QDialog):
         """Initialize instance"""
         super().__init__()
 
-        self.setWindowTitle("Query Vizier")
+        self.setWindowTitle("Invert Axis")
 
         QButtons = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
 
@@ -44,7 +44,7 @@ class InvertAxisDialog(QDialog):
         self.whichAxisQuestion.setMaxLength(4)
 
         layout = QGridLayout()
-        layout.addWidget(QLabel("Axis to invert (x, y both)"), 0, 0)
+        layout.addWidget(QLabel("Axis to invert (x, y, both)"), 0, 0)
         layout.addWidget(self.whichAxisQuestion, 0, 1)
         layout.addWidget(self.buttonBox)
         self.setLayout(layout)

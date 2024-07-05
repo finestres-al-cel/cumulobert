@@ -32,7 +32,7 @@ class FindStarSettingsDialog(QDialog):
         """Initialize instance"""
         super().__init__()
 
-        self.setWindowTitle("Query Vizier")
+        self.setWindowTitle("Find stars")
 
         QButtons = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
 
