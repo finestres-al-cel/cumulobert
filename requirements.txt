@@ -1,0 +1,9 @@
+astropy >= 8.0.0
+astroquery >= 0.4.11
+jupyterlab >= 4.6.1
+matplotlib >= 3.11.0
+numpy >= 2.5.0
+pandas >= 3.0.4
+photutils >= 3.0.0
+pyqtgraph >= 0.14.0
+pyqt6 >= 6.11.0

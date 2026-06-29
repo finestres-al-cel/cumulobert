@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cumulobert"
+version = "0.1.0"
+description = "Tools and a GUI app to extract the fotomerty of a cluster"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+  { name = "iprafols" }
+]
+dynamic = ["dependencies"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pylint",
+  "yapf"
+]
+
+[project.urls]
+Homepage = "https://github.com/finestres-al-cel/cumulobert"
+Repository = "https://github.com/finestres-al-cel/cumulobert"
+
+[tool.setuptools]
+include-package-data = true
+script-files = [
+  "bin/cumulobert_app.py",
+]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["cumulobert*"]
+
+[tool.setuptools.package-data]
+planet_orbits = ["app/button_plots/*.png"]
