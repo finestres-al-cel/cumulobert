@@ -8,6 +8,8 @@
 
 *checkpoint.ipynb
 
+eggs/
+.eggs/
 cumulobert.egg-info/
 
 *.log
