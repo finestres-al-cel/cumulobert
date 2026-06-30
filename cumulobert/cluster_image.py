@@ -125,7 +125,7 @@ class ClusterImage:
         finally:
             hdu.close()
 
-    def find_stars(self, ext_cat, threshold=50, fwhm=8, minsep_fwhm=2.5):
+    def find_stars(self, ext_cat, threshold=50, fwhm=8, min_separation=2.5):
         """Find stars in the image
 
         Arguments
@@ -144,9 +144,9 @@ class ClusterImage:
         (see https://photutils.readthedocs.io/en/stable/api/photutils.detection.IRAFStarFinder.html
         for details)
 
-        minsep_fwhm: float
+        min_separation: float
         The separation (in units of fwhm) for detected objects. The minimum
-        separation is calculated as int((fwhm * minsep_fwhm) + 0.5) and is
+        separation is calculated as int((fwhm * min_separation) + 0.5) and is
         clipped to a minimum value of 2. Note that large values may result in
         long run times.
         (see https://photutils.readthedocs.io/en/stable/api/photutils.detection.IRAFStarFinder.html
@@ -165,10 +165,9 @@ class ClusterImage:
         find = IRAFStarFinder(
             threshold,
             fwhm,
-            minsep_fwhm=minsep_fwhm,
-            roundlo=0.01,
-            roundhi=1,
-            sharphi=1,
+            min_separation=min_separation,
+            sharpness_range=(0.5, 1),
+            roundness_range=(0.01, 1),
             exclude_border=True)
 
         sources = find(self.data)
@@ -176,13 +175,13 @@ class ClusterImage:
         sources['filter'] = self.header['FILTER']
         sources['exptime'] = self.header['EXPTIME']
         sources['dateobs'] = self.header['DATE-OBS']
-
+        
         peak_median = np.median(sources['peak'])
         starcat = []
         for source in sources:
             # Here we set the positions in the image (i.e. the centroid of
             # the detected objects) where we will do the aperture photometry
-            star_pos = np.transpose((source['xcentroid'], source['ycentroid']))
+            star_pos = np.transpose((source['x_centroid'], source['y_centroid']))
             aper_radius = source["fwhm"]*2 + 0.09*source['peak']/peak_median
             circular_aper = CircularAperture(star_pos, r=aper_radius)
             circular_annulus_inner = aper_radius + 2
@@ -190,6 +189,10 @@ class ClusterImage:
             circular_annulus = CircularAnnulus(
                 star_pos, r_in=circular_annulus_inner, r_out=circular_annulus_outer)
             star_data = aperture_photometry(self.data, circular_aper)
+            # aperture_photometry stores aperture geometry in table metadata.
+            # Since aperture radius varies star-by-star and we already keep it
+            # as a column, drop metadata to prevent merge warnings in vstack.
+            star_data.meta = {}
             star_data["aper_radius"] = aper_radius
             star_data["circular_annulus_inner"] = circular_annulus_inner
             star_data["circular_annulus_outer"] = circular_annulus_outer
@@ -212,9 +215,9 @@ class ClusterImage:
             # Here we add the corresponding (RA, Dec) coordinates for each
             # target taking into account their (X,Y) coordinates and the WCS
             # info from the header
-            sky = self.wcs.pixel_to_world(source['xcentroid'], source['ycentroid'])
-            star_data['xcentroid'] = source['xcentroid']
-            star_data['ycentroid'] = source['ycentroid']
+            sky = self.wcs.pixel_to_world(source['x_centroid'], source['y_centroid'])
+            star_data['x_centroid'] = source['x_centroid']
+            star_data['y_centroid'] = source['y_centroid']
             star_data['ra'] = sky.ra
             star_data['dec'] = sky.dec
 
@@ -259,8 +262,8 @@ class ClusterImage:
         annular_radius_list = []
         for item in self.star_cat:
 
-            x_center = item["xcentroid"]
-            y_center = item["ycentroid"]
+            x_center = item["x_centroid"]
+            y_center = item["y_centroid"]
 
             # inner circle
             inner_radius = item["circular_annulus_inner"]
@@ -364,8 +367,8 @@ class ClusterImage:
         aper_radius_list = []
         for item in self.star_cat:
 
-            x_center = item["xcentroid"]
-            y_center = item["ycentroid"]
+            x_center = item["x_centroid"]
+            y_center = item["y_centroid"]
             radius = item["aper_radius"]
 
             x_circle = radius*np.cos(ANGLES) + x_center

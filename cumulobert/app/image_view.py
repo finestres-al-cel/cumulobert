@@ -153,10 +153,10 @@ class ImageView(pg.PlotWidget):
         # generate an adjustabled color bar
         if self.colorBarValues is None:
             self.colorBar = pg.ColorBarItem(
-                # we multiply the minimum and maximum levels by 1.08 and 0.017
+                # we multiply the minimum and maximum levels by 1.055 and 0.917
                 # these are arbitrary values that can be changed in the display
                 # but have been found to have a good balance in some images
-                values=(np.min(self.imageData)*1.055, np.max(self.imageData)*0.017),
+                values=(np.min(self.imageData)*1.055, np.max(self.imageData)*0.917),
                 colorMap=colorMap)
         else:
             self.colorBar = pg.ColorBarItem(

@@ -185,9 +185,9 @@ class MainWindow(QMainWindow):
                     errorDialog.exec()
                     return
                 try:
-                    minsep_fwhm = float(findStarSettingDialog.minsepFwhmQuestion.text())
+                    min_separation = float(findStarSettingDialog.minsepFwhmQuestion.text())
                 except ValueError as error:
-                    errorDialog = ErrorDialog("Selected minsep_fwhm must be a float")
+                    errorDialog = ErrorDialog("Selected min_separation must be a float")
                     errorDialog.exec()
                     return
 
@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
                     self.ext_cat,
                     threshold=threshold,
                     fwhm=fwhm,
-                    minsep_fwhm=minsep_fwhm)
+                    min_separation=min_separation)
 
                 aper_radius_list = self.cluster_image.aper_radius_arrays(
                     self.imageView.pix_to_radec)
