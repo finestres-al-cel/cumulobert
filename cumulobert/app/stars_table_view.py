@@ -11,7 +11,7 @@ import pyqtgraph as pg
 from cumulobert.app.success_dialog import SuccessDialog
 
 SHOW_COLUMNS = [
-    "xcentroid", "ycentroid", "ra", "dec", "filter",
+    "x_centroid", "y_centroid", "ra", "dec", "filter",
     "inst. mag", "TIC", "GAIA", "Bmag", "Vmag", "is reference", "calib mag"]
 MIN_REF_STARS = 3
 
