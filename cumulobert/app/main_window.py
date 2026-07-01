@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
             star_cat.sort(['ra', 'dec'])
         # sort by x/y
         else:
-            star_cat.sort(['xcentroid', 'ycentroid'])
+            star_cat.sort(['x_centroid', 'y_centroid'])
 
 
         windowWidth = self.frameGeometry().width()
